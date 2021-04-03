@@ -9,22 +9,10 @@ use Socialite;
 
 class LoginController extends Controller
 {
-    //redirect user to the google authentication page
-    public function redirectToProvider() 
+    public function retrieveUser($token)
     {
-        return \Socialite::driver('google')->redirect();
-    }
-
-    //obtain the user information from GitHub
-    public function handleProviderCallback()
-    {
-        $user = \Socialite::driver('google')->user();
-    }
-
-    public function retrieveUser($user)
-    {
-        $user = \Socialite::driver('google')->userFromToken($user);
-
+        $user = Socialite::driver('google')->userFromToken($token);
+        
         return response()->json($user, 200);
     }
 }

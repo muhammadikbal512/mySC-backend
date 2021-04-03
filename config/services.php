@@ -31,9 +31,8 @@ return [
     ],
 
     'google' => [
-        'client_id' => '1032966377380-8n63b7jrdaq6p4l8mhkpgqdnfakfvqos.apps.googleusercontent.com',
-        'client_secret' => 'TrTy0zeOkyA0ixxI_IM0k31V'
-        
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', null)
     ]
-
 ];
