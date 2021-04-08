@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','provider_id','role_id','media_id','is_active'
     ];
 
     /**
@@ -36,4 +36,35 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+     //Relationship to Media
+     public function media(){
+        return $this->belongsTo('App\Media');
+    }
+
+    //Relationship to Role
+    public function role(){
+        return $this->belongsTo('App\Role');
+    }
+
+    public function isDosen(){
+        if($this->role->name == 'dosen' && $this->is_active == 1){
+            return true;
+        }
+        return false;
+    }
+
+    //method tob check the Role for User -> Lecturer
+    public function isMahasiswa(){
+        if($this->role->name == 'mahasiswa' && $this->is_active == 1){
+            return true;
+        }
+        return false;
+    }
+
+    //Relationship to Experience
+    public function experience(){
+        return $this->hasOne('App\Experience');
+    }
+
 }
