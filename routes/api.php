@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
-Route::post('/auth/callback/{provider}','AuthController@callback');
+Route::post('/auth/callback/{provider}','AuthController@callback')->middleware('active');
 
 Route::post('/auth/logout','AuthController@logout');
 //Detail User
@@ -37,11 +37,35 @@ Route::resource('users', 'UserController');
 
 
 
-Route::group(['prefix'=>'user','middleware'=>['jwt.auth', 'actove']], function() {
+Route::group(['prefix'=>'user','middleware'=>['jwt.auth', 'active']], function() {
+    //Route for showing all Records
+    Route::get('/records', 'RecordController@allRecord');
+
+    //Route for showing all Pending Records
+    Route::get('/records/pending', 'RecordController@recordPending');
+
+    //Route for showing all Verified Records
+    Route::get('/records/verified', 'RecordController@recordVerified');
     
-    //Route for showing all Record
-    Route::get('/records', 'RecordController@records');
+    //Route for showing all Denied Records
+    Route::get('/records/denied', 'RecordController@recordDenied');
 
     //Route for store record
     Route::post('/records', 'RecordController@storeRecord');
+
+    //Route for showing userHistory
+    Route::get('/records/show/{id}', 'RecordController@userHistory');
+
+    //Route for approve a Record
+    Route::post('/records/{id}/feedback', 'RecordController@feedback');
+
+    //Get A Progress Level Up
+    Route::get('/experience/user/{id}/progress','ExperienceController@progress');
+
+    //Get a Total SC and Total AIC
+    Route::get('/experience/user/{id}', 'ExperienceController@exp');
+
+    //Get All Level Record
+    Route::get('/level','LevelController@index');
+
 });

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Feedback extends Model
 {
     protected $fillable = [
-        'like','dislike','user_id'
+        'Approve','Disapprove','user_id'
     ];
 
     //Relationship polymorphic

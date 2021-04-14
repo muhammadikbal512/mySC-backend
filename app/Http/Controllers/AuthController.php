@@ -31,11 +31,6 @@ class AuthController extends Controller
 
         $getInfo    = Socialite::driver($provider)->stateless()->userFromToken($request->access_token);
 
-        // This script use just only to my own check
-        // $getInfo    = Socialite::driver($provider)->stateless()->user();
-        // dd($getInfo);
-
-
         $checkuser  = $this->checkUser($getInfo,$provider);
 
         $user       = User::FindOrFail($checkuser->id);
@@ -43,8 +38,7 @@ class AuthController extends Controller
         //Store a user to experience table
         $this->experience($user);
 
-        //Store a user to login history table
-        // $this->loginHistory($user);
+
 
         $token      = Auth::login($user);
 
@@ -74,7 +68,7 @@ class AuthController extends Controller
             $user = $media->user()->create([
                 'name'          => $getInfo->name,
                 'email'         => $getInfo->email,
-                'password'      => $getInfo->password,
+                'password'      => Hash::make($getInfo->password),
                 'provider_id'   => $getInfo->id,
             ]);            
 
@@ -127,7 +121,7 @@ class AuthController extends Controller
         return response()->json([
             'User'  => [
                 'Detail_user'   => $user,
-                'Reviewer'      => $user->difficulties()->select('name')->get(),
+                // 'Reviewer'      => $user->difficulties()->select('name')->get(),
                 'Role'          => $user->role()->select('name')->get(),
                 'Media'         => $user->media()->select('path')->get(),
 

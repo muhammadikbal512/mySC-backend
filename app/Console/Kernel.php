@@ -24,7 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        //Update Mass Experience to Every User
+        $schedule->call('App\Http\Controllers\ExperienceController@mass')->everyMinute();
+        
     }
 
     /**

@@ -6,9 +6,21 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+
+    //Generate Token JWT (Package from Tymon/JWTAuth)
+    public function getJWTIdentifier(){
+        return $this->getkey();
+    }
+
+    //Generate Token JWT (Package from Tymon/JWTAuth)
+    public function getJWTCustomClaims(){
+        return [];
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -37,8 +49,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-     //Relationship to Media
-     public function media(){
+    //Relationship to Media
+    public function media(){
         return $this->belongsTo('App\Media');
     }
 
@@ -47,6 +59,15 @@ class User extends Authenticatable
         return $this->belongsTo('App\Role');
     }
 
+    //method tob check the Role for User -> Administrator
+    public function isAdmin(){
+        if($this->role->name == 'admin' && $this->is_active == 1){
+            return true;
+        }
+        return false;
+    }
+
+    //method tob check the Role for User -> Lecturer
     public function isDosen(){
         if($this->role->name == 'dosen' && $this->is_active == 1){
             return true;
@@ -54,7 +75,7 @@ class User extends Authenticatable
         return false;
     }
 
-    //method tob check the Role for User -> Lecturer
+    //method tob check the Role for User - Student
     public function isMahasiswa(){
         if($this->role->name == 'mahasiswa' && $this->is_active == 1){
             return true;
@@ -62,9 +83,32 @@ class User extends Authenticatable
         return false;
     }
 
+    //Relationship to Difficulty
+    public function difficulties(){
+        return $this->belongsToMany('App\Difficulty')->as('reviewer')->withTimestamps();
+    }
+
     //Relationship to Experience
     public function experience(){
         return $this->hasOne('App\Experience');
+    }
+
+    //Relationship to LoginHistory
+    public function login(){
+        return $this->hasMany('App\LoginHistory');
+    }
+
+    public function answers()
+    {
+        return $this->hasMany('App\Answer');
+    }
+
+    public function history(){
+        return $this->hasMany('App\History');
+    }
+
+    public function feedback(){
+        return $this->hasMany('App\Feedback');
     }
 
 }

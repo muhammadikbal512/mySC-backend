@@ -14,7 +14,6 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Fruitcake\Cors\HandleCors::class,
         \App\Http\Middleware\CheckForMaintenanceMode::class,
@@ -42,6 +41,7 @@ class Kernel extends HttpKernel
         'api' => [
             'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Fruitcake\Cors\HandleCors::class,
         ],
     ];
 
@@ -63,5 +63,17 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'jwt.auth'  => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+        'jwt.refresh'=> \Tymon\JWTAuth\Http\Middleware\Refreshtoken::class,
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'lecturer' => \App\Http\Middleware\LecturerMiddleware::class,
+        'notStudent' => \App\Http\Middleware\NotStudentMiddleware::class,
+        'limit'   => \App\Http\Middleware\LimitMiddleware::class,
+        'expired' => \App\Http\Middleware\ExpiredMiddleware::class,
+        'restrict'=> \App\Http\Middleware\RestrictReviewerMiddleware::class,
+        'active'  => \App\Http\Middleware\isActiveMiddleware::class,
+        'updateRecord' => \App\Http\Middleware\UpdateRecordMiddleware::class,
+        'limitfeedback' => \App\Http\Middleware\LimitFeedbackMiddleware::class,
+        'faqlimit' => \App\Http\Middleware\FAQLimit::Class,
     ];
 }

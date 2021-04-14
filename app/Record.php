@@ -16,11 +16,6 @@ class Record extends Model
         return $this->belongsTo('App\User');
     }
 
-    //Relationship to Quest
-    public function quest(){
-        return $this->belongsTo('App\Quest');
-    }
-
     //Relation to Feedback (Polymorphic)
     public function feedback(){
         return $this->morphMany('App\Feedback','feedbackable');
