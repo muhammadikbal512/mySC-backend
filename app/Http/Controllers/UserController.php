@@ -7,6 +7,7 @@ use App\Role;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserController extends Controller
 {
@@ -14,6 +15,12 @@ class UserController extends Controller
     {
         $user = User::with('media','role')->select('id','name','email','media_id','role_id','is_active')->get();
         return response()->json($user,200);
+    }
+
+    public function test() {
+        $roles = Role::whereId(3)->first();
+        $users = $roles->user()->get();
+        return response()->json($users,200);
     }
 
     public function store(Request $request)
@@ -63,7 +70,6 @@ class UserController extends Controller
         return response()->json([
             'User'  => [
                 'Detail_user'   => $user,
-                'Reviewer'      => $user->difficulties()->select('name')->get(),
                 'Role'          => $user->role()->select('name')->get(),
                 'Media'         => $user->media()->select('path')->get(),
 

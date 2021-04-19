@@ -16,7 +16,7 @@ class CreateFeedbackTable extends Migration
         Schema::create('feedback', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('Approve')->unsigned()->nullable();
-            $table->tinyInteger('Disapprove')->unsigned()->nullable();
+            $table->tinyInteger('Reject')->unsigned()->nullable();
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->bigInteger('feedbackable_id')->unsigned();
             $table->string('feedbackable_type');

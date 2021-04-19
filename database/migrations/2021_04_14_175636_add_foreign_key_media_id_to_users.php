@@ -14,7 +14,7 @@ class AddForeignKeyMediaIdToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreign('media_id')->references('id')->on('medias')->onDelete('cascade');
+            // $table->foreign('media_id')->references('id')->on('medias')->onDelete('cascade');
         });
     }
 
@@ -26,7 +26,7 @@ class AddForeignKeyMediaIdToUsers extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            // $table->dropForeign('users_media_id_foreign');
         });
     }
 }

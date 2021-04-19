@@ -33,7 +33,9 @@ Route::post('/auth/user','AuthController@show')->middleware('jwt.auth');
 // Route::get('login/user/{user}', 'Auth\LoginController@retrieveUser');
 
 
-Route::resource('users', 'UserController');
+Route::get('users', 'UserController@index');
+
+Route::get('users/dosen', 'UserController@test');
 
 
 
@@ -44,20 +46,32 @@ Route::group(['prefix'=>'user','middleware'=>['jwt.auth', 'active']], function()
     //Route for showing all Pending Records
     Route::get('/records/pending', 'RecordController@recordPending');
 
+    //Route for showing Pending Records by Id
+    Route::get('/records/pending/{id}', 'RecordController@pendingId');
+
     //Route for showing all Verified Records
     Route::get('/records/verified', 'RecordController@recordVerified');
     
     //Route for showing all Denied Records
-    Route::get('/records/denied', 'RecordController@recordDenied');
+    Route::get('/records/rejected', 'RecordController@recordDenied');
 
     //Route for store record
     Route::post('/records', 'RecordController@storeRecord');
 
-    //Route for showing userHistory
-    Route::get('/records/show/{id}', 'RecordController@userHistory');
+    //Route for showing userHistory Pending
+    Route::get('/records/show/pending/{id}', 'RecordController@userPending');
+
+    //Route for showing userHistory Pending
+    Route::get('/records/show/approved/{id}', 'RecordController@userApproved');
+
+    //Route for showing userHistory Pending
+    Route::get('/records/show/rejected/{id}', 'RecordController@userRejected');
 
     //Route for approve a Record
-    Route::post('/records/{id}/feedback', 'RecordController@feedback');
+    Route::post('/records/{id}/feedbackApprove', 'RecordController@feedbackApprove');
+
+    //Route for Disapprove a Record
+    Route::post('/records/{id}/feedbackReject', 'RecordController@feedbackReject');
 
     //Get A Progress Level Up
     Route::get('/experience/user/{id}/progress','ExperienceController@progress');

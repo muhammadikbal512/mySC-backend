@@ -121,7 +121,6 @@ class AuthController extends Controller
         return response()->json([
             'User'  => [
                 'Detail_user'   => $user,
-                // 'Reviewer'      => $user->difficulties()->select('name')->get(),
                 'Role'          => $user->role()->select('name')->get(),
                 'Media'         => $user->media()->select('path')->get(),
 

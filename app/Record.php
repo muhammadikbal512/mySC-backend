@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class Record extends Model
 {
     protected $fillable =[
-        'user_id','link','status','value'
+        'user_id','link','status','value', 'dosen_id'
     ];
 
     //Relationship to User

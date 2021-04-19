@@ -13,15 +13,23 @@ use Carbon\Carbon;
 
 class RecordController extends Controller
 {
-
+    //get All Records
     public function allRecord() {
         $records = Record::with('user')->get();
         return response()->json($records, 200);
     }
 
+    //get all Record Pending
     public function recordPending() {
         $records = Record::with('user')->whereStatus('pending')->get();
         return response()->json($records, 200);
+    }
+
+    //get all Record Pending by id
+    public function pendingId($id) {
+        $records    = Record::with('user')->whereUserId($id)->get();
+        $users  = $users->whereStatus('pending')->get();
+        return response()->json($users,200);
     }
 
     public function recordVerified() {
@@ -30,7 +38,7 @@ class RecordController extends Controller
     }
 
     public function recordDenied() {
-        $records = Record::with('user')->whereStatus('Disapprove')->get();
+        $records = Record::with('user')->whereStatus('Rejected')->get();
         return response()->json($records, 200);
     }
 
@@ -41,9 +49,10 @@ class RecordController extends Controller
             // dd($user);
 
             $record = Record::create([
-                'user_id' => $user->id,
-                'value'   => 1,
-                'link'    => $request->link
+                'user_id'       => $user->id,
+                'value'         => 1,
+                'link'          => $request->link,
+                'dosen_id'      => $request->id
             ]);
 
             return response()->json([
@@ -59,37 +68,57 @@ class RecordController extends Controller
         }
     }
 
-    public function userHistory(Request $request,$id) {
-        $request->validate([
-            'date'  => 'date'
-        ]);
+    public function userPending($id) {
+        
 
-        $record     = Record::FindOrFail($id);
-        $user       = JWTAuth::user();
-        $date       = Carbon::parse($request->date)->setTimeZone('Asia/Jakarta')->setTime(0,0,0); 
-
-            $records    = $record->records()->where('records.created_at','pending',$date->toDateString().'%')->where('records.user_id','=',$user->id)->get();
-
-            foreach($records as $rec){
-                
-                // $sum = $rec->feedback()->sum('like');
-                $data[]     = [
-                    'detail_record' => $rec,
-                    'status'        => $rec->status,
-                    'user'          => $rec->user->name,
-                ];
-            }
-
-        $exp = Record::where('user_id','=',$user->id)->where('status','=','Approved')->where('created_at','like',$date->toDateString().'%')->sum('value');
-
+        // $date = $request->query('date');
+        // if($date == ""){
+        //     $date = now();
+        // }
+        $record    = Record::with('user')->whereStatus("pending")->whereUserId($id)->get();
+        $user   = User::where('id',$id)->first();
         return response()->json([
-            'data'      =>  $data,
-            'value'     =>  $exp,
-
+            'detail_record'    => $record,
+            'media'         => $user->media->path,
         ],200);
+
+
     }
 
-    public function feedback(Request $request,$id){
+    public function userApproved($id) {
+        
+
+        // $date = $request->query('date');
+        // if($date == ""){
+        //     $date = now();
+        // }
+        $record    = Record::with('user')->whereStatus("Approved")->whereUserId($id)->get();
+        $user   = User::where('id',$id)->first();
+        return response()->json([
+            'detail_record'    => $record,
+            'media'         => $user->media->path,
+        ],200);
+
+
+    }
+
+    public function userRejected($id) {
+        
+
+        // $date = $request->query('date');
+        // if($date == ""){
+        //     $date = now();
+        // }
+        $record    = Record::with('user')->whereStatus("Rejected")->whereUserId($id)->get();
+        $user   = User::where('id',$id)->first();
+        return response()->json([
+            'detail_record'    => $record,
+        ],200);
+
+
+    }
+
+    public function feedbackApprove(Request $request,$id){
 
         // try{
             $user   = JWTAuth::user();
@@ -97,16 +126,42 @@ class RecordController extends Controller
             
             $request->validate([
                 'Approve'      => 'numeric',
-                'Disapprove'   => 'numeric',
             ]);
 
             $result = $record->feedback()->create([
                 'Approve'       => $request->Approve,
-                'Disapprove'    => $request->Disapprove,
                 'user_id'       => $user->id,
             ]);
 
             $this->checkStatus($record);
+            
+            return response()->json([
+                'Record' => $record,
+                'data'   => $result,
+                'message'=>'Record has been approved'],201);
+
+        // }
+        // catch(\exception $e){
+        //     return response()->json(['message'=>'Bad request'],400);
+        // }
+    }
+
+    public function feedbackReject(Request $request,$id){
+
+        // try{
+            $user   = JWTAuth::user();
+            $record = Record::FindOrFail($id);
+            
+            $request->validate([
+                'Reject'   => 'numeric',
+            ]);
+
+            $result = $record->feedback()->create([
+                'Reject'        => $request->Reject,
+                'user_id'       => $user->id,
+            ]);
+
+            $this->checkDisapprove($record);
             
             return response()->json([
                 'Record' => $record,
@@ -127,13 +182,21 @@ class RecordController extends Controller
                 'status'    => 'Approved'
             ]);
         }
-        else {
+        return  $record;
+    }
+
+    function checkDisapprove($record){
+        $sum = $record->feedback()->sum('Reject');
+        if($sum > 0){
             $record->update([
-                'status'    =>  'Disapprove'
+                'status'    => 'Rejected'
             ]);
         }
-
         return  $record;
 
+    }
+
+    function claimSC() {
+        
     }
 }
