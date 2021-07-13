@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
     {
         //Update Mass Experience to Every User
         $schedule->call('App\Http\Controllers\ExperienceController@mass')->everyMinute();
+        $schedule->call('App\Http\Controllers\ExperienceController@claimSC')->everyMinute();
         
     }
 

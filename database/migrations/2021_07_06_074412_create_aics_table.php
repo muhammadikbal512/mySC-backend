@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIdDosenToRecordsTable extends Migration
+class CreateAicsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class AddIdDosenToRecordsTable extends Migration
      */
     public function up()
     {
-        Schema::table('records', function (Blueprint $table) {
-            $table->bigInteger('dosen_id')->unsigned()->nullable();
+        Schema::create('aics', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('user_id')->unsigned();
+            $table->mediumInteger('value')->unsigned();
+            $table->bigInteger('dosen_id')->unsigned();
+            $table->timestamps();
         });
     }
 
@@ -25,8 +29,6 @@ class AddIdDosenToRecordsTable extends Migration
      */
     public function down()
     {
-        Schema::table('records', function (Blueprint $table) {
-            $table->dropColumn('dosen_id');
-        });
+        Schema::dropIfExists('aics');
     }
 }

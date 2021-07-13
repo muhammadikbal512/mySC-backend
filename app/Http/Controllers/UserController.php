@@ -17,10 +17,12 @@ class UserController extends Controller
         return response()->json($user,200);
     }
 
-    public function test() {
-        $roles = Role::whereId(3)->first();
-        $users = $roles->user()->get();
-        return response()->json($users,200);
+    //get all dosen
+    public function getDosen() {
+        $users = User::whereRoleId(2)->get();
+        return response()->json([
+            'dropdown_list' =>  $users
+        ],200);
     }
 
     public function store(Request $request)

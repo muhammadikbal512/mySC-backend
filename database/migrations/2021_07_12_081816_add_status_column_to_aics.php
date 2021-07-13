@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIdDosenToRecordsTable extends Migration
+class AddStatusColumnToAics extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddIdDosenToRecordsTable extends Migration
      */
     public function up()
     {
-        Schema::table('records', function (Blueprint $table) {
-            $table->bigInteger('dosen_id')->unsigned()->nullable();
+        Schema::table('aics', function (Blueprint $table) {
+            $table->string('status',15)->default('pending');
         });
     }
 
@@ -25,8 +25,8 @@ class AddIdDosenToRecordsTable extends Migration
      */
     public function down()
     {
-        Schema::table('records', function (Blueprint $table) {
-            $table->dropColumn('dosen_id');
+        Schema::table('aics', function (Blueprint $table) {
+            $table->dropColumn('status');
         });
     }
 }

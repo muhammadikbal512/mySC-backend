@@ -45,6 +45,7 @@ class ExperienceController extends Controller
             $exp = Experience::whereUserId($id);
 
         }
+        
         return response()->json($exp->get(),200);
         
     }
@@ -85,19 +86,53 @@ class ExperienceController extends Controller
 
     }
 
-    // function BadgePath($badges,$user,$type,$date){
-    //     //Get Badge
-    //     if(count($badges)>0){
-    //     foreach($badges as $badge){
-    //         $mediaId    = $badge->badge->media_id;
-    //         $media      = Media::where('id',$mediaId)->first();
-    //         $path       = url('/').$media->path;
-    //     }
-    //     }
-    //     else{
-    //         $path       = 'none';
-    //     }
-    //     return $path;
-    // }
+    public function claimSC() {
+
+        $user = JWTAuth::user();
+
+        $exp = Experience::whereUserId($user->id)->first();
+        
+            for($i=10; $exp->total_sc >= $i; $i+=10){
+                $margin = $i - $exp->total_sc;
+                if ($margin>0){
+                    $exp->total_aic = ($i - 10)/10;
+                } 
+                else {
+                    $exp->total_aic = $i / 10;
+                } 
+            }
+            $exp->save();
+
+
+        
+        // $exp->save();
+
+        // while($exp->total_sc >= $sc){
+        //     $margin = $sc - $exp->total_sc;
+        //     if ($margin>0){
+        //         $aic = ($sc - 10)/10;
+        //     } 
+        //     elseif($margin = 0){
+        //         $aic = $sc / 10;
+        //     } else {
+        //         $sc+=10;    
+        //     }
+        // }
+    }
+
+    public function claimAIC() {
+        $user = JWTAuth::user();
+
+        $exp = Experience::whereUserId($user->id)->first();
+
+        $exp = $exp->total_aic - 1;
+
+
+        return response()->json([
+            'Message'   =>  'Claim AIC Success !'
+        ]);
+    }
+
+   
 
 }
