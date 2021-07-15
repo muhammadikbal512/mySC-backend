@@ -90,7 +90,6 @@ class RecordController extends Controller
                 'dosen' => $result->name,
                 'sc'    => $request->link
             ];
-            dd($data);
             Mail::to($result->email)->send(new ScNotif($data));
             return response()->json([
                 'Data' => [

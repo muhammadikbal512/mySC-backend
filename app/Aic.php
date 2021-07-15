@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class Aic extends Model
 {
     protected $fillable =[
-        'user_id','value','dosen_id', 'status'
+        'user_id','value','dosen_id', 'status' , 'rekening'
     ];
 
     public function user(){

@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class Store_aic extends Model
 {
     protected $fillable =[
-        'user_id','value','dosen_id'
+        'user_id','value','dosen_id' , 'status'
     ];
 
     public function user(){

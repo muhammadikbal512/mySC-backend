@@ -327,7 +327,7 @@
                       <td align="center" style="padding:0;Margin:0;padding-left:40px;padding-right:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px">Dear {{ $data['dosen']}}</p></td> 
                      </tr> 
                      <tr style="border-collapse:collapse"> 
-                      <td align="center" style="padding:20px;Margin:0;padding-right:35px;padding-left:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px">{{ $data['name'] }} telah berhasil submit SC pada website MySC dengan data sebagai berikut :</p></td> 
+                      <td align="center" style="padding:20px;Margin:0;padding-right:35px;padding-left:40px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px">{{ $data['name'] }} telah berhasil request claim AIC pada website MySC dengan data sebagai berikut :</p></td> 
                      </tr> 
                    </table> 
                    <table style="border-collapse:collapse;border-spacing:0;width:200px"> 
@@ -336,8 +336,12 @@
                       <td style="border-color:inherit;text-align:left;vertical-align:top;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px"> : {{ $data['name'] }}</td> 
                      </tr> 
                      <tr> 
-                      <td style="border-color:inherit;text-align:left;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px">SC</td> 
-                      <td style="border-color:inherit;text-align:left;vertical-align:top;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px"> : {{ $data['sc'] }}</td> 
+                      <td style="border-color:inherit;text-align:left;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px">AIC</td> 
+                      <td style="border-color:inherit;text-align:left;vertical-align:top;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px"> : {{ $data['value'] }}</td> 
+                     </tr> 
+                     <tr> 
+                      <td style="border-color:inherit;text-align:left;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px">Rekening</td> 
+                      <td style="border-color:inherit;text-align:left;vertical-align:top;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:24px;color:#666666;font-size:16px"> : {{ $data['rekening'] }}</td> 
                      </tr> 
                    </table></td> 
                  </tr> 

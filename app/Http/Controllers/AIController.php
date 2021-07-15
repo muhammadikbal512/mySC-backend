@@ -6,23 +6,34 @@ use Illuminate\Http\Request;
 use App\Aic;
 use App\User;
 use App\Experience;
+use App\Record;
+use App\Level;
+use App\Media;
 
 use JWTAuth;
+
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Mail;
+use App\Mail\ClaimAIC;
 
 class AIController extends Controller
 {
 
     public function allRecord() {
         $user   =   JWTAuth::user();
-        $records = Aic::with('user')->whereDosenId($user->id)->get();
+        $records = Aic::with('user')->whereDosenId($user->id)->whereDate('created_at', today())->get();
         return response()->json([
                 'Data' => [
                     'Record' => $records,
                 ],
             ], 201);
+    }
+
+    public function showRecord() {
+        $user = JWTAuth::user();
+
+        $claimaic = Aic::with('user');
     }
 
 
@@ -34,11 +45,18 @@ class AIController extends Controller
             $record = Aic::create([
                 'user_id'       => $user->id,
                 'value'         => $request->value,
-                'dosen_id'      => $request->dosen_id
+                'dosen_id'      => $request->dosen_id,
+                'rekening'      => $request->rekening
             ]);
             // dd($record);
-            // $result = User::whereId($request->dosen_id)->first();
-            // Mail::to($result->email)->send(new ScNotif);
+            $result = User::whereId($request->dosen_id)->first();
+            $data = [
+                'name'        => $user->name,
+                'value'       => $request->value,
+                'dosen'       => $result->name,
+                'rekening'    => $request->rekening
+            ];
+            Mail::to($result->email)->send(new ClaimAIC());
             return response()->json([
                 'Data' => [
                     'Record' => $record,
@@ -53,4 +71,54 @@ class AIController extends Controller
             return response()->json(['message' => 'Bad Request'], 400);
         }
     }
+
+    public function claimAIC(Request $request, $id) {
+
+            $user = JWTAuth::user();
+            $aic = Aic::FindOrFail($id);
+            $exp = Experience::whereUserId($aic->user_id)->first();
+
+            $tes = $aic->whereStatus('Approved')->sum('value');
+
+            $exp->total_aic = $exp->total_aic - $aic->value;
+            $exp->claimaic = $tes;
+
+            $exp->save();
+
+            $request->validate([
+                'Approve'      => 'numeric',
+                ''
+            ]);
+
+            $result = $aic->feedback()->create([
+                'Approve'       => $request->Approve,
+                'user_id'       => $user->id,
+            ]);
+
+            $this->checkStatus($aic);
+
+            return response()->json([
+                'Record'    => $aic,
+                'data'      => $result,
+                'claimed'   => $tes,
+                'aic'       => $exp->total_aic,
+
+                'message'=>'Record has been approved'],201);
+
+    }
+
+    //Method to check and Update status a record
+    function checkStatus($record){
+        $sum = $record->feedback()->sum('Approve');
+        if($sum > 0){
+            $record->update([
+                'status'    => 'Approved'
+            ]);
+        }
+        return  $record;
+    }
+
+    
+
+    
 }

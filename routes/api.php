@@ -38,6 +38,9 @@ Route::post('users/create', 'UserController@store');
 
 Route::get('users/dosen', 'UserController@getDosen');
 
+Route::post('/claimaic/{id}/aic', 'AIController@claimAIC');
+Route::get('/claimed/aic', 'AIController@claimedAIC');
+
 
 
 
@@ -68,13 +71,14 @@ Route::group(['prefix'=>'user','middleware'=>['jwt.auth', 'active']], function()
 
     Route::get('/experience/sc', 'ExperienceController@claimSC');
 
-    Route::get('/experience/aic', 'ExperienceController@claimAIC');
 
     //AIC
     Route::post('/aic/store', 'AIController@storeRecord');
 
     //Get All Level Record
     Route::get('/level','LevelController@index');
+
+    Route::get('/aic/show', 'AIController@allRecord');
 
 });
 
@@ -102,6 +106,8 @@ Route::group(['prefix'=>'secretchamber','middleware'=>['jwt.auth', 'active']], f
 
      //Route for showing AIC Submitted
     Route::get('/aic/show', 'AIController@allRecord');
+
+
 
 });
 

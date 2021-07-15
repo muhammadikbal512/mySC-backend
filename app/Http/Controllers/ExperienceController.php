@@ -54,13 +54,11 @@ class ExperienceController extends Controller
     function massExperience($id){
         $exp        = Experience::whereUserId($id)->first();
         $sum        = Record::whereUserId($id)->whereStatus('Approved')->sum('value');
-        // $count      = Record::whereUserId($id)->whereStatus('Approved')->count();
         $level      = Level::where('min_value','<=',$sum)->where('max_value','>=',$sum)->first();
 
         if($exp->total_value != $sum){
             $exp->update([
                 'total_sc'        => $sum,
-                // 'total_quest'     => $count,
                 'level_id'        => $level->id,
             ]);
         }
@@ -101,23 +99,11 @@ class ExperienceController extends Controller
                     $exp->total_aic = $i / 10;
                 } 
             }
+            // $exp->total_aic = $exp->total_aic - $exp->claimaic;
+
             $exp->save();
 
 
-        
-        // $exp->save();
-
-        // while($exp->total_sc >= $sc){
-        //     $margin = $sc - $exp->total_sc;
-        //     if ($margin>0){
-        //         $aic = ($sc - 10)/10;
-        //     } 
-        //     elseif($margin = 0){
-        //         $aic = $sc / 10;
-        //     } else {
-        //         $sc+=10;    
-        //     }
-        // }
     }
 
     public function claimAIC() {
@@ -125,12 +111,18 @@ class ExperienceController extends Controller
 
         $exp = Experience::whereUserId($user->id)->first();
 
-        $exp = $exp->total_aic - 1;
+        $exps = $exp->total_aic - 1;
+        // dd($exps);
 
 
-        return response()->json([
-            'Message'   =>  'Claim AIC Success !'
-        ]);
+        $exp->save();
+
+        dd($exp);
+
+
+        // return response()->json([
+        //     'Message'   =>  'Claim AIC Success !'
+        // ]);
     }
 
    
