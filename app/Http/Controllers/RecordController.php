@@ -50,7 +50,7 @@ class RecordController extends Controller
     //get all Record Verified
     public function recordVerified() {
         $user   =  JWTAuth::user();
-        $records = Record::with('user')->whereDosenId($user->id)->whereStatus('Approved')->orderBy('created_at')->whereDate('created_at', today())->get();
+        $records = Record::with('user')->whereDosenId($user->id)->whereStatus('Approved')->orderBy('id', 'DESC')->whereDate('created_at', today())->get();
 
         // $records   = collect($records)->map(function($item){
 
@@ -81,14 +81,14 @@ class RecordController extends Controller
             $record = Record::create([
                 'user_id'       => $user->id,
                 'value'         => 1,
-                'link'          => $request->link,
+                'sc'            => $request->sc,
                 'dosen_id'      => $request->dosen_id
             ]);
             $result = User::whereId($request->dosen_id)->first();
             $data = [
                 'name'  => $user->name,
                 'dosen' => $result->name,
-                'sc'    => $request->link
+                'sc'    => $request->sc
             ];
             Mail::to($result->email)->send(new ScNotif($data));
             return response()->json([
@@ -115,8 +115,12 @@ class RecordController extends Controller
         }
         $user = JWTAuth::user();
         $record = Record::with('user')->whereUserId($user->id)->whereStatus("pending")->whereDate('created_at', today())->get();
+        $dosen = $record->id;
+        dd($dosen);
+        // $dosen = User::whereId($record->dosen_id);
         return response()->json([
-            'detail_record' =>  $record
+            'detail_record' =>  $record,
+            // 'dosen'     =>  $dosen
         ]);
         // $record    = Record::with('user')->whereStatus("pending")->whereUserId($id)->get();
         // $user   = User::where('id',$id)->first();
@@ -172,9 +176,43 @@ class RecordController extends Controller
 
     }
 
+    public function feedbackAllApprove(Request $request){
+
+            $record = Record::whereStatus('pending')->get();
+
+            foreach($record as $record) {
+                $user   = JWTAuth::user();
+
+                $request->validate([
+                    'Approve'      => 'numeric',
+                ]);
+                $result = $record->feedback()->create([
+                    'Approve'       => $request->Approve,
+                    'user_id'       => $user->id,
+                ]);
+    
+                $this->checkStatusAll($record);
+                
+            }
+            return response()->json([
+                'Record' => $record,
+                'data'   => $result,
+                'message'=>'Record has been approved'],201);
+    }
+
+     //Method to check and Update status a record
+     function checkStatusAll($record){
+        $sum = $record->feedback()->sum('Approve');
+        if($sum > 0){
+            $record->update([
+                'status'    => 'Approved'
+            ]);
+        }
+        return  $record;
+    }
+
     public function feedbackApprove(Request $request,$id){
 
-        // try{
             $user   = JWTAuth::user();
             $record = Record::FindOrFail($id);
             
@@ -191,7 +229,6 @@ class RecordController extends Controller
             $data = [
                 'murid'  => $results->name,
             ];
-            // dd($data);
             Mail::to($results->email)->send(new ScNotifApproved($data));
 
             $this->checkStatus($record);
@@ -200,16 +237,10 @@ class RecordController extends Controller
                 'Record' => $record,
                 'data'   => $result,
                 'message'=>'Record has been approved'],201);
-
-        // }
-        // catch(\exception $e){
-        //     return response()->json(['message'=>'Bad request'],400);
-        // }
     }
 
     public function feedbackReject(Request $request,$id){
 
-        // try{
             $user   = JWTAuth::user();
             $record = Record::FindOrFail($id);
             
@@ -228,17 +259,11 @@ class RecordController extends Controller
             $data = [
                 'name'  => $results->name,
             ];
-            // dd($email);
             Mail::to($results->email)->send(new ScNotifApproved($results->name));
             return response()->json([
                 'Record' => $record,
                 'data'   => $result,
                 'message'=>'Record has been approved'],201);
-
-        // }
-        // catch(\exception $e){
-        //     return response()->json(['message'=>'Bad request'],400);
-        // }
     }
 
     //Method to check and Update status a record
@@ -266,7 +291,7 @@ class RecordController extends Controller
     public function storeAIC(Request $request) {
         try {
             $user = JWTAuth::user();
-            dd($user);
+            // dd($user);
 
             $record = Record::create([
                 'user_id'       => $user->id,
@@ -289,6 +314,47 @@ class RecordController extends Controller
         catch (Exception $e) {
             return response()->json(['message' => 'Bad Request'], 400);
         }
+    }
+
+     //Get Newest Record for User Active
+     public function recordSc(){
+        $user = JWTAuth::user();
+
+        $record = Record::with('user')->whereUserId($user->id)->latest()->take(1)->get();
+        return response()->json($record,200);
+    }
+
+    public function recordScId($id) {
+        $record = Record::whereUserId($id)->latest()->first();
+        return response()->json($record,200);
+    }
+
+    public function feedbackApproveGave(Request $request,$id){
+
+        $user   = JWTAuth::user();
+        $record = Record::FindOrFail($id);
+        
+        $request->validate([
+            'Approve'      => 'numeric',
+        ]);
+
+        $result = $record->feedback()->create([
+            'Approve'       => $request->Approve,
+            'user_id'       => $user->id,
+        ]);
+        
+        $results = $record->user()->first();
+        // $data = [
+        //     'murid'  => $results->name,
+        // ];
+        // Mail::to($results->email)->send(new ScNotifApproved($data));
+
+        $this->checkStatus($record);
+
+        return response()->json([
+            'Record' => $record,
+            'data'   => $result,
+            'message'=>'Record has been approved'],201);
     }
 
     

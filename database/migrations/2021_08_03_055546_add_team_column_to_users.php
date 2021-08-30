@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddClaimaicColumnToExperiences extends Migration
+class AddTeamColumnToUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddClaimaicColumnToExperiences extends Migration
      */
     public function up()
     {
-        Schema::table('experiences', function (Blueprint $table) {
-            $table->mediumInteger('claimaic')->unsigned()->default(0);
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('team')->default('');
         });
     }
 
@@ -25,8 +25,8 @@ class AddClaimaicColumnToExperiences extends Migration
      */
     public function down()
     {
-        Schema::table('experiences', function (Blueprint $table) {
-            $table->dropColumn('claimaic');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('team');
         });
     }
 }

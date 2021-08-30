@@ -13,7 +13,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $user = User::with('media','role')->select('id','name','email','media_id','role_id','is_active')->get();
+        $user = User::with('media','role', 'team')->select('id','name','email','media_id','role_id','is_active', 'team')->get();
+        return response()->json($user,200);
+    }
+
+    public function getUserId($id) {
+        $user   = User::whereId($id)->first();
+
         return response()->json($user,200);
     }
 
@@ -27,7 +33,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        try{
+        // try{
             if(User::whereEmail($request->email)->first())
             {
                 return response()->json(['message'=>'User has already exist'],409);
@@ -36,16 +42,16 @@ class UserController extends Controller
             $request->validate([
                 'name'      => 'required|min:3|max:50|regex:/^[\pL\s\-]+$/u',
                 'email'     => 'required',
-                'role_id'   => 'required|numeric',
-                'password'  => 'required'
+                'team'      => 'required'
             ]);
 
             $user = User::create([
                 'name'          => $request->name,
                 'email'         => $request->email,
                 'provider_id'   => 123,
-                'password'      => Hash::make($request->password),
-                'role_id'       => $request->role_id,
+                'password'      => Hash::make(123),
+                'team'          => $request->team,
+                'role_id'       => 1,
                 'is_active'     => 1,
                 'media_id'      => 100,
             ]);
@@ -59,11 +65,11 @@ class UserController extends Controller
                 'Data'      => $user,
                 'message'   => 'User created successfully'
             ],201);
-        }
-        catch (\Exception $e){
-            // return response()->json(['message'=>'Bad Request'],400);
-            dd($e);
-        }
+        // }
+        // catch (\Exception $e){
+        //     return response()->json(['message'=>'Bad Request'],400);
+        //     // dd($e);
+        // }
     }
     public function show($id)
     {
@@ -143,4 +149,5 @@ class UserController extends Controller
             'message'       => 'Reviewer added successfully'
         ],200);
     }
+
 }

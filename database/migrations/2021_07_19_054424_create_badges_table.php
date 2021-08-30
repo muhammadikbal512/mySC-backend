@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddClaimaicColumnToExperiences extends Migration
+class CreateBadgesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddClaimaicColumnToExperiences extends Migration
      */
     public function up()
     {
-        Schema::table('experiences', function (Blueprint $table) {
-            $table->mediumInteger('claimaic')->unsigned()->default(0);
+        Schema::create('badges', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +27,6 @@ class AddClaimaicColumnToExperiences extends Migration
      */
     public function down()
     {
-        Schema::table('experiences', function (Blueprint $table) {
-            $table->dropColumn('claimaic');
-        });
+        Schema::dropIfExists('badges');
     }
 }

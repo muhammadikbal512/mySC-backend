@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRekeningColumnToAics extends Migration
+class AddGaveColumnToRecords extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddRekeningColumnToAics extends Migration
      */
     public function up()
     {
-        Schema::table('aics', function (Blueprint $table) {
-            $table->text('rekening')->unsigned();
+        Schema::table('records', function (Blueprint $table) {
+            $table->string('gave',15)->default('');
         });
     }
 
@@ -25,8 +25,8 @@ class AddRekeningColumnToAics extends Migration
      */
     public function down()
     {
-        Schema::table('aics', function (Blueprint $table) {
-            $table->dropColumn('rekening');
+        Schema::table('records', function (Blueprint $table) {
+            //
         });
     }
 }

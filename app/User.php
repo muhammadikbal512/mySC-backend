@@ -28,7 +28,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','provider_id','role_id','media_id','is_active', 'dosen_id'
+        'name', 'email', 'password','provider_id','role_id','media_id','is_active', 'dosen_id', 'team'
     ];
 
     /**
@@ -40,6 +40,8 @@ class User extends Authenticatable implements JWTSubject
         'password', 'remember_token',
     ];
 
+    protected $with = ['role'];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -49,6 +51,8 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
+    // protected $with = ['media'];
+
     //Relationship to Media
     public function media(){
         return $this->belongsTo('App\Media');
@@ -57,6 +61,11 @@ class User extends Authenticatable implements JWTSubject
     //Relationship to Role
     public function role(){
         return $this->belongsTo('App\Role');
+    }
+
+     //Relationship to Role
+     public function team(){
+        return $this->belongsTo('App\Team', 'team');
     }
 
     //method tob check the Role for User -> Administrator
@@ -91,6 +100,11 @@ class User extends Authenticatable implements JWTSubject
     //Relationship to Experience
     public function experience(){
         return $this->hasOne('App\Experience');
+    }
+
+    //Relationship to Experience
+    public function record(){
+        return $this->hasOne('App\Record');
     }
 
     //Relationship to LoginHistory

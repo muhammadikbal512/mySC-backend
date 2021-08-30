@@ -4,14 +4,16 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Level extends Model
+class Badge extends Model
 {
     protected $fillable = [
-        'name','min_value','max_value'
+        'name',
     ];
 
-    protected $with = ['media'];
-    
+    public function history(){
+        return $this->hasOne('App\History');
+    }
+
     public function media(){
         return $this->belongsTo('App\Media');
     }

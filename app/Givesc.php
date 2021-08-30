@@ -5,11 +5,12 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class Record extends Model
+class Givesc extends Model
 {
     protected $fillable =[
-        'user_id','sc','status','value', 'dosen_id',
+        'user_id','link','status','value', 'dosen_id'
     ];
+
 
     //Relationship to User
     public function user(){
@@ -26,6 +27,4 @@ class Record extends Model
         $date = Carbon::parse($this->attributes['created_at'])->setTimeZone('Asia/Jakarta')->format('D, d F Y H:i');
         return $date;
     }
-
-
 }

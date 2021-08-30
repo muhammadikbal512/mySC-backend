@@ -30,17 +30,31 @@ class AIController extends Controller
             ], 201);
     }
 
+    public function allRecordRedeemed() {
+        $user   =   JWTAuth::user();
+        $records = Aic::with('user')->whereDosenId($user->id)->whereStatus('Approved', today())->get();
+        return response()->json([
+                'Data' => [
+                    'Record' => $records,
+                ],
+            ], 201);
+    }
+
     public function showRecord() {
         $user = JWTAuth::user();
 
-        $claimaic = Aic::with('user');
+        $claimaic = Aic::with('user')->whereUserId($user->id)->whereDate('created_at', today())->get();
+        return response()->json([
+            'Data' => [
+                'Record' => $claimaic,
+            ],
+        ], 201);
     }
 
 
     public function storeRecord(Request $request) {
         try {
             $user = JWTAuth::user();
-            // dd($user);
 
             $record = Aic::create([
                 'user_id'       => $user->id,
@@ -48,7 +62,6 @@ class AIController extends Controller
                 'dosen_id'      => $request->dosen_id,
                 'rekening'      => $request->rekening
             ]);
-            // dd($record);
             $result = User::whereId($request->dosen_id)->first();
             $data = [
                 'name'        => $user->name,
@@ -56,7 +69,7 @@ class AIController extends Controller
                 'dosen'       => $result->name,
                 'rekening'    => $request->rekening
             ];
-            Mail::to($result->email)->send(new ClaimAIC());
+            Mail::to($result->email)->send(new ClaimAIC($data));
             return response()->json([
                 'Data' => [
                     'Record' => $record,
@@ -72,18 +85,41 @@ class AIController extends Controller
         }
     }
 
+    public function claimAllAIC() {
+        $aic = Aic::whereStatus('pending')->get();
+
+        foreach($aic as $aic) {
+            $user = JWTAuth::user();
+            $exp = Experience::whereUserId($aic->user_id)->first();
+
+            $result = $aic->feedback()->create([
+                'Approve'   => 1,
+                'user_id'   => $user->id,
+            ]);
+
+            $this->checkStatus($aic);
+            $tes = $aic->whereStatus('Approved')->sum('value');
+            $exp->total_aic = $exp->total_aic - $aic->value;
+            $exp->claimaic = $tes;
+
+            $exp->save();
+        };
+
+        return response()->json([
+            'Record'    => $aic,
+            'data'      => $result,
+            'claimed'   => $tes,
+            'aic'       => $exp->total_aic,
+            'message'=>'Record has been approved'],201);
+    }
+
     public function claimAIC(Request $request, $id) {
 
             $user = JWTAuth::user();
             $aic = Aic::FindOrFail($id);
             $exp = Experience::whereUserId($aic->user_id)->first();
 
-            $tes = $aic->whereStatus('Approved')->sum('value');
 
-            $exp->total_aic = $exp->total_aic - $aic->value;
-            $exp->claimaic = $tes;
-
-            $exp->save();
 
             $request->validate([
                 'Approve'      => 'numeric',
@@ -96,6 +132,11 @@ class AIController extends Controller
             ]);
 
             $this->checkStatus($aic);
+            $tes = $aic->whereStatus('Approved')->sum('value');
+            $exp->total_aic = $exp->total_aic - $aic->value;
+            $exp->claimaic = $tes;
+
+            $exp->save();
 
             return response()->json([
                 'Record'    => $aic,

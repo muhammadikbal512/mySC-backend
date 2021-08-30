@@ -18,4 +18,12 @@ class Experience extends Model
     public function user(){
         return $this->belongsTo('App\User');
     }
+
+    public function media(){
+        return $this->belongsTo('App\Media');
+    }
+
+    public function team() {
+        return $this->belongsTo('App\Team');
+    }
 }
