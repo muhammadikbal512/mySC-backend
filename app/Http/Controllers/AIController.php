@@ -40,6 +40,16 @@ class AIController extends Controller
             ], 201);
     }
 
+    public function showAllAIC() {
+        $user   =   JWTAuth::user();
+        $records = Aic::with('user')->whereDosenId($user->id)->whereStatus('Approved')->get();
+        return response()->json([
+                'Data' => [
+                    'Record' => $records,
+                ],
+            ], 201);
+    }
+
     public function showRecord() {
         $user = JWTAuth::user();
 

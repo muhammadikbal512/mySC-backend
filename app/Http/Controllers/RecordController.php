@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Record;
 use App\User;
 use App\Experience;
+use App\Aic;
 
 use JWTAuth;
 use Carbon\Carbon;
@@ -24,19 +25,29 @@ class RecordController extends Controller
         $records = Record::with('user')->whereDosenId($user->id)->get();
         $verified = Record::with('user')->whereDosenId($user->id)->whereStatus('Approved')->get();
         $pending = Record::with('user')->whereDosenId($user->id)->whereStatus('pending')->get();
+        $rejected = Record::with('user')->whereDosenId($user->id)->whereStatus('Rejected')->get();
+        $AIC = Aic::with('user')->whereDosenId($user->id)->get();
         return response()->json([
                 'Data' => [
                     'Record' => $records,
                     'Verified'   => $verified,
                     'Pending'  => $pending,
+                    'Rejected'  =>  $rejected,
+                    'Aic'       =>  $AIC
                 ],
             ], 201);
     }
-
+     //get all Record GiveSC
+     public function giveScPending() {
+       $user   =  JWTAuth::user();
+        $records = Record::with('user')->whereDosenId($user->id)->whereStatus('givesc')->get();
+        return response()->json($records, 200);
+    }
     //get all Record Pending
     public function recordPending() {
+
         $user   =  JWTAuth::user();
-        $records = Record::with('user')->whereDosenId($user->id)->whereStatus('pending')->whereDate('created_at', today())->get();
+        $records = Record::with('user')->whereDosenId($user->id)->whereStatus('pending')->get();
         return response()->json($records, 200);
     }
 
@@ -48,19 +59,13 @@ class RecordController extends Controller
     }
     
     //get all Record Verified
-    public function recordVerified() {
+    public function recordVerified(Request $request) {
         $user   =  JWTAuth::user();
-        $records = Record::with('user')->whereDosenId($user->id)->whereStatus('Approved')->orderBy('id', 'DESC')->whereDate('created_at', today())->get();
-
-        // $records   = collect($records)->map(function($item){
-
-        //     $item->created      = $item->created_at->setTimeZone('Asia/Jakarta')->diffForHumans();
-        //     $item->updated_at   = $item->updated_at->setTimeZone('Asia/Jakarta');
-        //     return $item;
-
-        // });
-
-        // // $records   = $this->paginate($records,10);
+        $date = $request->query('date');
+        if ($date == null) {
+            $date = now();
+        }
+        $records = Record::with('user')->whereDosenId($user->id)->whereStatus('Approved')->orderBy('id', 'DESC')->whereDate('created_at', $date)->get();
 
         return response()->json($records, 200);
     }
@@ -114,40 +119,21 @@ class RecordController extends Controller
             $date = now();
         }
         $user = JWTAuth::user();
-        $record = Record::with('user')->whereUserId($user->id)->whereStatus("pending")->whereDate('created_at', today())->get();
-        $dosen = $record->id;
-        dd($dosen);
-        // $dosen = User::whereId($record->dosen_id);
+        $record = Record::with('user')->whereUserId($user->id)->whereStatus("pending")->whereDate('created_at', $date)->get();
         return response()->json([
             'detail_record' =>  $record,
-            // 'dosen'     =>  $dosen
         ]);
-        // $record    = Record::with('user')->whereStatus("pending")->whereUserId($id)->get();
-        // $user   = User::where('id',$id)->first();
-        // return response()->json([
-        //     'detail_record'    => $record,
-        //     'media'         => $user->media->path,
-        // ],200);
-        
-
 
     }
 
     public function userApproved() {
         
-
-        // $date = $request->query('date');
-        // if($date == ""){
-        //     $date = now();
-        // }
-        // $record    = Record::with('user')->whereStatus("Approved")->whereUserId($id)->get();
-        // $user   = User::where('id',$id)->first();
-        // return response()->json([
-        //     'detail_record'    => $record,
-        //     'media'         => $user->media->path,
-        // ],200);
         $user = JWTAuth::user();
-        $record = Record::with('user')->whereUserId($user->id)->whereStatus("Approved")->whereDate('created_at', today())->get();
+        $date = $request->query('date');
+        if ($date == null) {
+            $date = now();
+        }
+        $record = Record::with('user')->whereUserId($user->id)->whereStatus("Approved")->whereDate('created_at', $date)->get();
         return response()->json([
             'detail_record' =>  $record
         ]);
@@ -325,7 +311,7 @@ class RecordController extends Controller
     }
 
     public function recordScId($id) {
-        $record = Record::whereUserId($id)->latest()->first();
+        $record = Record::whereUserId($id)->latest()->take(1)->get();
         return response()->json($record,200);
     }
 

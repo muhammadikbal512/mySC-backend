@@ -164,11 +164,20 @@ Route::group(['prefix'=>'secretchamber','middleware'=>['jwt.auth', 'active']], f
     //GiveSC Route
     Route::post('/givesc/records', 'GivescController@GiveSC');
 
-
+    //Function to Approved individual AIC on Viewboard Admin
     Route::post('/claimaic/{id}/aic', 'AIController@claimAIC');
+
+
     Route::get('/claimed/aic', 'AIController@claimedAIC');
+
+    //Show Today Records Redeemed AIC on Viewboard Admin
     Route::get('/redeemed/aic', 'AIController@allRecordRedeemed');
+
+    //Function to Approved all AIC
     Route::post('/claimaic/all', 'AIController@claimAllAIC');
+
+    //Show all Redeemed AIC on Viewboard Admin
+    Route::get('show/all/redeemed', 'AIController@showAllAIC');
 
     
 
